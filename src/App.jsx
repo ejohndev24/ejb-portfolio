@@ -138,7 +138,6 @@ function App() {
           <div className="section-label light"><span>02</span> Selected work</div>
           <div className="work-heading">
             <h2>A space for things<br /><em>I’ve shipped.</em></h2>
-            <p>Swap in your real project info and links whenever you’re ready.</p>
           </div>
           <div className="project-grid">
             {projects.map((project) => <ProjectCard key={project.number} project={project} />)}
