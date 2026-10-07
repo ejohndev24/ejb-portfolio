@@ -15,30 +15,90 @@ const Mark = () => (
 
 function ProjectCard({ project }) {
   const isPlaceholder = project.link === '#'
+  const [activeSlide, setActiveSlide] = useState(0)
+  const hasGallery = project.images?.length > 0
+
+  const changeSlide = (direction) => {
+    setActiveSlide((current) => (current + direction + project.images.length) % project.images.length)
+  }
+
+  const getSlidePosition = (index) => {
+    if (index === activeSlide) return 'active'
+    if (index === (activeSlide - 1 + project.images.length) % project.images.length) return 'previous'
+    if (index === (activeSlide + 1) % project.images.length) return 'next'
+    return 'hidden'
+  }
 
   return (
-    <article className={`project-card ${project.tone}`}>
-      <div className="project-top">
-        <span className="project-number">/{project.number}</span>
-        <div className="project-tags">
-          {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
+    <article className={`project-card ${project.tone}${hasGallery ? ' featured-project' : ''}`}>
+      <div className="project-details">
+        <div className="project-top">
+          <span className="project-number">/{project.number}</span>
+          <div className="project-tags">
+            {project.tags.map((tag) => <span key={tag}>{tag}</span>)}
+          </div>
         </div>
+        <div className="project-body">
+          {hasGallery && <span className="project-kicker">Featured mobile project</span>}
+          <h3>{project.title}</h3>
+          <p>{project.summary}</p>
+        </div>
+        <a
+          className="project-link"
+          href={project.link}
+          target={isPlaceholder ? undefined : '_blank'}
+          rel={isPlaceholder ? undefined : 'noreferrer'}
+          onClick={isPlaceholder ? (event) => event.preventDefault() : undefined}
+          aria-label={isPlaceholder ? `${project.title} link coming soon` : `View ${project.title}`}
+        >
+          <span>{isPlaceholder ? 'Link coming soon' : 'View project'}</span>
+          <Arrow />
+        </a>
       </div>
-      <div className="project-body">
-        <h3>{project.title}</h3>
-        <p>{project.summary}</p>
-      </div>
-      <a
-        className="project-link"
-        href={project.link}
-        target={isPlaceholder ? undefined : '_blank'}
-        rel={isPlaceholder ? undefined : 'noreferrer'}
-        onClick={isPlaceholder ? (event) => event.preventDefault() : undefined}
-        aria-label={isPlaceholder ? `${project.title} link coming soon` : `View ${project.title}`}
-      >
-        <span>{isPlaceholder ? 'Link coming soon' : 'View project'}</span>
-        <Arrow />
-      </a>
+
+      {hasGallery && (
+        <div
+          className="project-gallery"
+          aria-label={`${project.title} app screenshots`}
+          tabIndex="0"
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowLeft') changeSlide(-1)
+            if (event.key === 'ArrowRight') changeSlide(1)
+          }}
+        >
+          <div className="gallery-frame" aria-live="polite">
+            <span className="gallery-label">Explore the interface</span>
+            {project.images.map((image, index) => (
+              <img
+                key={image}
+                className={getSlidePosition(index)}
+                src={image}
+                alt={`${project.title} app screen ${index + 1} of ${project.images.length}`}
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            ))}
+          </div>
+          <div className="gallery-controls">
+            <div className="gallery-buttons">
+              <button type="button" onClick={() => changeSlide(-1)} aria-label="Previous screenshot"><span>←</span></button>
+              <button type="button" onClick={() => changeSlide(1)} aria-label="Next screenshot"><span>→</span></button>
+            </div>
+            <div className="gallery-dots" aria-label="Choose screenshot">
+              {project.images.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={index === activeSlide ? 'active' : ''}
+                  onClick={() => setActiveSlide(index)}
+                  aria-label={`Show screenshot ${index + 1}`}
+                  aria-current={index === activeSlide ? 'true' : undefined}
+                />
+              ))}
+            </div>
+            <span className="gallery-count">{String(activeSlide + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}</span>
+          </div>
+        </div>
+      )}
     </article>
   )
 }
