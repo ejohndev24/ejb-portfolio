@@ -16,7 +16,27 @@ const Mark = () => (
 function ProjectCard({ project }) {
   const isPlaceholder = project.link === '#'
   const [activeSlide, setActiveSlide] = useState(0)
+  const [previewOpen, setPreviewOpen] = useState(false)
   const hasGallery = project.images?.length > 0
+
+  useEffect(() => {
+    if (!previewOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    const handlePreviewKeyDown = (event) => {
+      if (event.key === 'Escape') setPreviewOpen(false)
+      if (event.key === 'ArrowLeft') changeSlide(-1)
+      if (event.key === 'ArrowRight') changeSlide(1)
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handlePreviewKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handlePreviewKeyDown)
+    }
+  }, [previewOpen])
 
   const changeSlide = (direction) => {
     setActiveSlide((current) => (current + direction + project.images.length) % project.images.length)
@@ -75,6 +95,16 @@ function ProjectCard({ project }) {
                 src={image}
                 alt={`${project.title} app screen ${index + 1} of ${project.images.length}`}
                 loading={index === 0 ? 'eager' : 'lazy'}
+                role={index === activeSlide ? 'button' : undefined}
+                tabIndex={index === activeSlide ? 0 : -1}
+                aria-label={index === activeSlide ? `Preview ${project.title} screenshot ${index + 1}` : undefined}
+                onClick={index === activeSlide ? () => setPreviewOpen(true) : undefined}
+                onKeyDown={index === activeSlide ? (event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    setPreviewOpen(true)
+                  }
+                } : undefined}
               />
             ))}
           </div>
@@ -96,6 +126,29 @@ function ProjectCard({ project }) {
               ))}
             </div>
             <span className="gallery-count">{String(activeSlide + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}</span>
+          </div>
+        </div>
+      )}
+
+      {hasGallery && previewOpen && (
+        <div
+          className="image-preview-backdrop"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setPreviewOpen(false)
+          }}
+        >
+          <div className="image-preview" role="dialog" aria-modal="true" aria-label={`${project.title} screenshot preview`}>
+            <button className="preview-close" type="button" onClick={() => setPreviewOpen(false)} aria-label="Close image preview" autoFocus>
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <button className="preview-arrow preview-previous" type="button" onClick={() => changeSlide(-1)} aria-label="Previous screenshot">
+              <span aria-hidden="true">&larr;</span>
+            </button>
+            <img src={project.images[activeSlide]} alt={`${project.title} app screen ${activeSlide + 1} enlarged`} />
+            <button className="preview-arrow preview-next" type="button" onClick={() => changeSlide(1)} aria-label="Next screenshot">
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+            <span className="preview-count">{String(activeSlide + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}</span>
           </div>
         </div>
       )}
