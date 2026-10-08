@@ -32,6 +32,7 @@ export const projects = [
   },
   {
     number: "02",
+    hidden: true,
     title: "",
     summary: "",
     tags: ["React", "Web"],
@@ -40,6 +41,7 @@ export const projects = [
   },
   {
     number: "03",
+    hidden: true,
     title: "",
     summary: "",
     tags: ["Next Project", "2026"],

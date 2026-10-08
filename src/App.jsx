@@ -200,7 +200,7 @@ function App() {
             <h2>A space for things<br /><em>I’ve shipped.</em></h2>
           </div>
           <div className="project-grid">
-            {projects.map((project) => <ProjectCard key={project.number} project={project} />)}
+            {projects.filter((project) => !project.hidden).map((project) => <ProjectCard key={project.number} project={project} />)}
           </div>
         </section>
 
