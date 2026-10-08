@@ -130,9 +130,10 @@ h1 { margin: 0; line-height: .84; letter-spacing: -.075em; }
 .gallery-frame img.next { z-index: 2; left: 84%; opacity: .55; transform: translateX(-50%) scale(.77) rotate(4deg); }
 .gallery-controls { position: relative; z-index: 5; min-height: 48px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; }
 .gallery-buttons { display: flex; gap: 7px; }
-.gallery-buttons button { width: 45px; height: 45px; padding: 0; border: 1px solid rgba(17,17,15,.35); display: grid; place-items: center; color: var(--ink); background: rgba(255,255,255,.55); cursor: pointer; transition: color .2s, background .2s, transform .2s; }
+.gallery-buttons button { width: 45px; height: 45px; padding: 0; border: 1px solid rgba(17,17,15,.35); display: grid; place-items: center; color: var(--ink); background: rgba(255,255,255,.55); cursor: pointer; transition: color .2s, background .2s; }
 .gallery-buttons button span { transform: translateY(-1px); }
-.gallery-buttons button:hover { color: white; background: var(--ink); transform: translateY(-2px); }
+.gallery-buttons button:hover { color: white; background: var(--ink); }
+.gallery-buttons button:active { transform: none; }
 .gallery-dots { display: flex; justify-content: center; gap: 8px; }
 .gallery-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: rgba(17,17,15,.25); cursor: pointer; transition: width .2s, border-radius .2s, background .2s; }
 .gallery-dots button.active { width: 24px; border-radius: 10px; background: var(--ink); }
